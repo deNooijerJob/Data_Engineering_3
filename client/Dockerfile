@@ -12,6 +12,7 @@ COPY . .
 EXPOSE 5001
 
 ENV HASHTAGS ["#Covid", "#COVID", "#Covid19"]
+ENV location_api http://predict:5000/predict
 #run the api
 CMD ["python3", "client.py"]
 

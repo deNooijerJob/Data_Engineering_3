@@ -27,7 +27,7 @@ def predict(tweets):
         "Content-Type": "application/json"
     }
 
-    prediction = requests.post('http://34.91.59.185:5000/predict', data=payload, headers=headers).json()
+    prediction = requests.post(os.environ['location_api'], data=payload, headers=headers).json()
     updateN(len(prediction['predictions']))
     update_avg(prediction['predictions'])
 
@@ -105,6 +105,7 @@ class StdOutListener(StreamListener):  # Don't touch this
 
     def on_data(self, data):
         data = json.loads(data)
+        print(data)
         process_tweets(reformat_tweet(data))
         self._counter += 1
         return True

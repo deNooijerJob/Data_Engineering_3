@@ -1,7 +1,6 @@
 tweepy
 datetime
 google.cloud
-json
 tweepy
 requests
 
