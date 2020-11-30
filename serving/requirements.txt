@@ -7,3 +7,7 @@ requests
 keras
 google-cloud-storage
 tensorflow
+fsspec
+gcsfs
+nltk
+gensim
