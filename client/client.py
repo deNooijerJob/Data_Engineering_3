@@ -1,9 +1,9 @@
 import json
-import datetime
-import time
 import tweepy
 from tweepy.streaming import StreamListener
 import requests
+import time
+import os
 import credentials
 
 auth = tweepy.OAuthHandler(credentials.CONSUMER_KEY, credentials.CONSUMER_SECRET)
@@ -11,12 +11,48 @@ auth.set_access_token(credentials.ACCESS_TOKEN, credentials.ACCESS_SECRET)
 
 api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=False)
 
-hashtag_lst = ["#Covid"]
+hashtag_lst = os.environ['HASHTAGS']
+
+debug = True
+
+tweet_buffer = []
+
+avg_sentiment = 0.0
+num_observations = 0
+
+def predict(tweets):
+    payload = json.dumps({"tweets": tweets})
+
+    headers = {
+        "Content-Type": "application/json"
+    }
+
+    prediction = requests.post('http://34.91.59.185:5000/predict', data=payload, headers=headers).json()
+    updateN(len(prediction['predictions']))
+    update_avg(prediction['predictions'])
+
+def updateN(n):
+    global num_observations
+    num_observations = num_observations + n
+
+def update_avg(predictions):
+    for p in predictions:
+        global avg_sentiment
+        global num_observations
+        s = float(p[0])
+        avg_sentiment = avg_sentiment + ((s - avg_sentiment) / num_observations)
+    print('avg sentiment = ' + str(avg_sentiment))
+
 
 def process_tweets(tweet):
-    payload = {"tweets": [tweet['text']]}
-    prediction = requests.post('http://34.91.59.185:5000/predict', data=payload)
-    print(prediction.json())
+    if tweet["lang"] == "en":
+        tweet_buffer.append(tweet['text'])
+        if (len(tweet_buffer) > 10):
+            predict_buffer = tweet_buffer[:10]
+            for x in predict_buffer:
+                tweet_buffer.remove(x)
+            predict(predict_buffer)
+
 
 # Method to format a tweet from tweepy # TODO dont touch this
 def reformat_tweet(tweet):
@@ -56,8 +92,9 @@ def reformat_tweet(tweet):
 
     return processed_doc
 
+
 # Custom listener class
-class StdOutListener(StreamListener): # Don't touch this
+class StdOutListener(StreamListener):  # Don't touch this
     """ A listener handles tweets that are received from the stream.
     This is a basic listener that just pushes tweets to pubsub
     """
@@ -66,7 +103,7 @@ class StdOutListener(StreamListener): # Don't touch this
         super(StdOutListener, self).__init__()
         self._counter = 0
 
-    def on_data(self,data):
+    def on_data(self, data):
         data = json.loads(data)
         process_tweets(reformat_tweet(data))
         self._counter += 1
@@ -85,3 +122,4 @@ class StdOutListener(StreamListener): # Don't touch this
 tweets_api = StdOutListener()
 stream = tweepy.Stream(auth, tweets_api, tweet_mode='extended')
 stream.filter(track=hashtag_lst)
+
