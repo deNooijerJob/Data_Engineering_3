@@ -11,10 +11,10 @@ from flask import json, request
 import numpy as np
 
 app = dash.Dash()
-X = deque(maxlen=20)
+X = deque()
 X.append(1)
 
-Y = deque(maxlen=20)
+Y = deque()
 Y.append(0.5)
 
 server = flask.Flask(__name__)
@@ -35,7 +35,7 @@ app.layout = html.Div(
         dcc.Graph(id='live-graph', animate=True),
         dcc.Interval(
             id='graph-update',
-            interval=1000,
+            interval=10000,
             n_intervals=0
         ),
     ]

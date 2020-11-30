@@ -13,7 +13,7 @@ EXPOSE 5001
 
 ENV HASHTAGS ["#Covid", "#COVID", "#Covid19"]
 ENV location_api http://predict:5000/predict
-ENV location_api http://vis:8050/predict
+ENV vis_api http://vis:8050/update_avg
 #run the api
 CMD ["python3", "client.py"]
 

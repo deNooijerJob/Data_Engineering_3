@@ -43,7 +43,6 @@ def update_avg(predictions):
         s = float(p[0])
         avg_sentiment = avg_sentiment + ((s - avg_sentiment) / num_observations)
 
-    global avg_sentiment
     payload = json.dumps({"avg": avg_sentiment})
 
     headers = {
