@@ -132,5 +132,5 @@ tweets_api = StdOutListener()
 stream = tweepy.Stream(auth, tweets_api, tweet_mode='extended')
 stream.filter(track=hashtag_lst)
 
-app.run(host='0.0.0.0', port=5000, threaded=True)
+app.run(host='0.0.0.0', port=5001, threaded=True)
 
