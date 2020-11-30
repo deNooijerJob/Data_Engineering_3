@@ -42,6 +42,15 @@ def update_avg(predictions):
         global num_observations
         s = float(p[0])
         avg_sentiment = avg_sentiment + ((s - avg_sentiment) / num_observations)
+
+    global avg_sentiment
+    payload = json.dumps({"avg": avg_sentiment})
+
+    headers = {
+        "Content-Type": "application/json"
+    }
+
+    update = requests.post(os.environ['vis_api'], data=payload, headers=headers).json()
     print('avg sentiment = ' + str(avg_sentiment))
 
 

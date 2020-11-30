@@ -8,21 +8,25 @@ import random
 import plotly.graph_objs as go
 import flask
 from flask import json, request
+import numpy as np
 
 app = dash.Dash()
 X = deque(maxlen=20)
 X.append(1)
 
 Y = deque(maxlen=20)
-Y.append(1)
+Y.append(0.5)
 
 server = flask.Flask(__name__)
 app = dash.Dash(__name__, server=server)
 
 
-@server.route('/test', methods=['POST'])
-def test(): 
-    requests = request.get_json()   
+@server.route('/update_avg', methods=['POST'])
+def changeSentiment():
+    requests = request.get_json()
+    newAvg = np.round(float(requests['avg']), 2)
+    X.append(X[-1] + 1)
+    Y.append(newAvg)
     return json.dumps({"message": "nice"}, sort_keys=False, indent=4), 200
 
 
@@ -43,8 +47,7 @@ app.layout = html.Div(
     [Input('graph-update', 'n_intervals')]
 )
 def update_graph_scatter(n):
-    X.append(X[-1] + 1)
-    Y.append(Y[-1] + Y[-1] * random.uniform(-0.1, 0.1))
+
 
     data = plotly.graph_objs.Scatter(
         x=list(X),
