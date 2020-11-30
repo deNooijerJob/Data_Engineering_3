@@ -105,8 +105,11 @@ class StdOutListener(StreamListener):  # Don't touch this
 
     def on_data(self, data):
         data = json.loads(data)
-        print(data)
-        process_tweets(reformat_tweet(data))
+        #print(data)
+        try:
+            process_tweets(reformat_tweet(data))
+        except KeyError:
+            pass
         self._counter += 1
         return True
 
