@@ -28,13 +28,13 @@ tokenizer = pickle.load(open("downloaded_tokenizer.pkl", 'rb'))
 @app.route('/predict', methods=['POST'])
 def predict():
     requests = request.get_json()
-
+    print(requests)
     data = requests['tweets']
     nltk.download('stopwords')
     stop_words = stopwords.words('english')
     stemmer = SnowballStemmer("english")
 
-    for i in range(0, len(data.text)):
+    for i in range(0, len(data)):
         text = data[i]
         text = re.sub("@\S+|https?:\S+|http?:\S|[^A-Za-z0-9]+", ' ', str(text).lower()).strip()
         tokens = []
