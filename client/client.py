@@ -4,12 +4,8 @@ from tweepy.streaming import StreamListener
 import requests
 import time
 import os
-from flask import Flask, json, request, Response
 
 import credentials
-
-app = Flask(__name__)
-app.config["DEBUG"] = True
 
 auth = tweepy.OAuthHandler(credentials.CONSUMER_KEY, credentials.CONSUMER_SECRET)
 auth.set_access_token(credentials.ACCESS_TOKEN, credentials.ACCESS_SECRET)
@@ -132,5 +128,4 @@ tweets_api = StdOutListener()
 stream = tweepy.Stream(auth, tweets_api, tweet_mode='extended')
 stream.filter(track=hashtag_lst)
 
-app.run(host='0.0.0.0', port=5001, threaded=True)
 

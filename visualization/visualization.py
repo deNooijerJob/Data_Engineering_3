@@ -6,6 +6,8 @@ import plotly
 from collections import deque
 import random
 import plotly.graph_objs as go
+import flask
+from flask import json, request
 
 app = dash.Dash()
 X = deque(maxlen=20)
@@ -14,7 +16,15 @@ X.append(1)
 Y = deque(maxlen=20)
 Y.append(1)
 
-app = dash.Dash(__name__)
+server = flask.Flask(__name__)
+app = dash.Dash(__name__, server=server)
+
+
+@server.route('/test', methods=['POST'])
+def test(): 
+    requests = request.get_json()   
+    return json.dumps({"message": "nice"}, sort_keys=False, indent=4), 200
+
 
 app.layout = html.Div(
     [
