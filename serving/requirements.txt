@@ -1,7 +1,9 @@
 flask
 pandas==1.0.5
-numpy==1.19.1
+numpy==1.16.0
+h5py==2.10.0
 torch
 requests
 keras
-google-cloud
+google-cloud-storage
+tensorflow

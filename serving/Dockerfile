@@ -1,3 +1,4 @@
+FROM python:3.7.7-buster
 #copy the python imports
 COPY requirements.txt .
 
@@ -11,5 +12,5 @@ COPY . .
 EXPOSE 5000
 
 #run the api
-CMD ["python3", "predict.py"]
+CMD ["python3", "predict_api.py"]
 
