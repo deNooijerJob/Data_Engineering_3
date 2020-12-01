@@ -11,10 +11,10 @@ from flask import json, request
 import numpy as np
 
 app = dash.Dash()
-X = deque()
-X.append(1)
+X = deque(maxlen=100)
+X.append(0)
 
-Y = deque()
+Y = deque(maxlen=100)
 Y.append(0.5)
 
 server = flask.Flask(__name__)
@@ -35,7 +35,7 @@ app.layout = html.Div(
         dcc.Graph(id='live-graph', animate=True),
         dcc.Interval(
             id='graph-update',
-            interval=10000,
+            interval=5000,
             n_intervals=0
         ),
     ]
@@ -57,7 +57,7 @@ def update_graph_scatter(n):
     )
 
     return {'data': [data],
-            'layout': go.Layout(xaxis=dict(range=[min(X), max(X)]), yaxis=dict(range=[min(Y), max(Y)]), )}
+            'layout': go.Layout(xaxis=dict(range=[min(X), max(X)]), yaxis=dict(range=[0, 1]), )}
 
 
 if __name__ == '__main__':
