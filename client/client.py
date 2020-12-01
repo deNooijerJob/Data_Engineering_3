@@ -1,3 +1,6 @@
+'''
+Import all dependencies
+'''
 import json
 import tweepy
 from tweepy.streaming import StreamListener
@@ -5,37 +8,51 @@ import requests
 import time
 import os
 
-import credentials
+import credentials # credentials file for twitter authentication
 
+#Authenticate witht the twitter API
 auth = tweepy.OAuthHandler(credentials.CONSUMER_KEY, credentials.CONSUMER_SECRET)
 auth.set_access_token(credentials.ACCESS_TOKEN, credentials.ACCESS_SECRET)
 
+#setup the Tweepy api
 api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=False)
 
+#Hashtag list to listnen to
 hashtag_lst = os.environ['HASHTAGS']
 
-debug = True
-
+#Buffer of tweets to be processed
 tweet_buffer = []
 
+#init running varibles
 avg_sentiment = 0.0
 num_observations = 0
 
-def predict(tweets):
-    payload = json.dumps({"tweets": tweets})
 
+'''
+Send a prediction request to the predict api
+'''
+def predict(tweets):
+    payload = json.dumps({"tweets": tweets}) # tweets to be predicted
+
+    # http headers
     headers = {
         "Content-Type": "application/json"
     }
 
-    prediction = requests.post(os.environ['location_api'], data=payload, headers=headers).json()
-    updateN(len(prediction['predictions']))
-    update_avg(prediction['predictions'])
+    prediction = requests.post(os.environ['location_api'], data=payload, headers=headers).json() #send request
+    updateN(len(prediction['predictions'])) #update number of tweets parsed
+    update_avg(prediction['predictions']) # update average sentiment
 
+'''
+updates the global number of tweets parsed
+'''
 def updateN(n):
     global num_observations
     num_observations = num_observations + n
 
+'''
+updates the average sentiment and updates the visualisation
+'''
 def update_avg(predictions):
     for p in predictions:
         global avg_sentiment
@@ -49,10 +66,12 @@ def update_avg(predictions):
         "Content-Type": "application/json"
     }
 
-    update = requests.post(os.environ['vis_api'], data=payload, headers=headers).json()
+    update = requests.post(os.environ['vis_api'], data=payload, headers=headers).json() # update visualisation
     print('avg sentiment = ' + str(avg_sentiment))
 
-
+'''
+processes incoming tweets and batches them in sets of ten before predicting to limit api calls (can be changed)
+'''
 def process_tweets(tweet):
     if tweet["lang"] == "en":
         tweet_buffer.append(tweet['text'])
@@ -60,7 +79,7 @@ def process_tweets(tweet):
             predict_buffer = tweet_buffer[:10]
             for x in predict_buffer:
                 tweet_buffer.remove(x)
-            predict(predict_buffer)
+            predict(predict_buffer) # make the prediction
 
 
 # Method to format a tweet from tweepy # TODO dont touch this

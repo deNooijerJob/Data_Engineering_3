@@ -11,7 +11,7 @@ COPY . .
 #expose the container port
 EXPOSE 5001
 
-ENV HASHTAGS ["#Covid", "#COVID", "#Covid19"]
+ENV HASHTAGS ["#Covid", "#COVID", "#Covid19", "#covid", "#COVID", "#covid19"]
 ENV location_api http://predict:5000/predict
 ENV vis_api http://vis:8050/update_avg
 #run the api
